@@ -153,7 +153,7 @@ def run_performance_test(index, format_type):
     print(f"Throughput: {metrics['throughput_qps']:.2f} qps")
 
     # Clean up the created index file
-    os.remove(save_path)
+    # os.remove(save_path)
     
     return metrics
 

@@ -1,9 +1,11 @@
 # Prerequisites:
-# pip install psycopg2-binary python-rocksdb pandas matplotlib
+# pip install psycopg2-binary redis pandas matplotlib
 #
 # Assumes a running PostgreSQL instance with a database named 'ir_project'.
 # You may need to adjust the DB_PARAMS dictionary to match your setup.
 # CREATE DATABASE ir_project;
+#
+# Assumes a running Redis instance on localhost:6379.
 
 import os
 import pickle
@@ -17,7 +19,7 @@ import csv
 import matplotlib.pyplot as plt
 import pandas as pd
 import psycopg2
-import rocksdb
+import redis
 import shutil
 
 from preprocess_data import load_news_data, load_wikipedia_data, preprocess_text
@@ -25,16 +27,17 @@ from preprocess_data import load_news_data, load_wikipedia_data, preprocess_text
 # --- PostgreSQL Connection Parameters ---
 # !!! IMPORTANT: Adjust these to your local PostgreSQL setup !!!
 DB_PARAMS = {
-    "dbname": "ir_project",
+    "dbname": "ire_1",
     "user": "postgres",
     "password": "root@1234", # Or your password
     "host": "localhost",
-    "port": "5432"
+    "port": 5432
 }
 POSTGRES_TABLE_NAME = "inverted_index_y2"
 
-# --- RocksDB Path ---
-ROCKSDB_PATH = "rocksdb_index_y2"
+# --- Redis Connection Parameters ---
+REDIS_HOST = "localhost"
+REDIS_PORT = 6379
 
 class PostgresIndex:
     """Handles indexing and querying using PostgreSQL."""
@@ -54,6 +57,7 @@ class PostgresIndex:
                     postings JSONB
                 );
                 """)
+                
                 # Clear the table for a fresh build
                 cur.execute(f"TRUNCATE TABLE {POSTGRES_TABLE_NAME};")
 
@@ -124,18 +128,16 @@ class PostgresIndex:
                 size_bytes = cur.fetchone()[0]
                 return size_bytes / (1024 * 1024)
 
-class RocksDBIndex:
-    """Handles indexing and querying using RocksDB."""
-    def __init__(self, db_path):
-        if os.path.exists(db_path):
-            shutil.rmtree(db_path) # Clean up previous runs
-        opts = rocksdb.Options(create_if_missing=True)
-        self.db = rocksdb.DB(db_path, opts)
+class RedisIndex:
+    """Handles indexing and querying using Redis."""
+    def __init__(self, redis_host, redis_port):
+        self.r = redis.Redis(host=redis_host, port=redis_port, db=0)
+        self.r.flushdb() # Clear the database for a fresh build
 
     def build_and_save(self, articles):
-        """Builds the index and inserts it into RocksDB."""
+        """Builds the index and inserts it into Redis."""
         inverted_index = defaultdict(list)
-        for i, article in enumerate(tqdm(articles, desc="Building Temp Index for RocksDB")):
+        for i, article in enumerate(tqdm(articles, desc="Building Temp Index for Redis")):
             doc_id = i
             tokens = preprocess_text(article['text']).split()
             term_positions = defaultdict(list)
@@ -144,11 +146,11 @@ class RocksDBIndex:
             for term, positions in term_positions.items():
                 inverted_index[term].append((doc_id, positions))
 
-        for term, postings in tqdm(inverted_index.items(), desc="Inserting into RocksDB"):
-            self.db.put(term.encode('utf-8'), pickle.dumps(postings))
+        for term, postings in tqdm(inverted_index.items(), desc="Inserting into Redis"):
+            self.r.set(term.encode('utf-8'), pickle.dumps(postings))
 
     def query(self, query_str):
-        """Queries RocksDB to retrieve postings and then processes them."""
+        """Queries Redis to retrieve postings and then processes them."""
         processed_query = preprocess_text(query_str).split()
         if not processed_query: return []
         
@@ -157,12 +159,15 @@ class RocksDBIndex:
 
         postings_lists = []
         for term in terms:
-            result = self.db.get(term.encode('utf-8'))
+            result = self.r.get(term.encode('utf-8'))
             if result:
                 postings_lists.append(pickle.loads(result))
             else:
                 return []
 
+        if not postings_lists:
+            return []
+            
         res = postings_lists[0]
         for i in range(1, len(postings_lists)):
             res = self._intersect(res, postings_lists[i])
@@ -181,12 +186,9 @@ class RocksDBIndex:
         return result
 
     def get_disk_size(self):
-        total_size = 0
-        for dirpath, _, filenames in os.walk(ROCKSDB_PATH):
-            for f in filenames:
-                fp = os.path.join(dirpath, f)
-                total_size += os.path.getsize(fp)
-        return total_size / (1024 * 1024)
+        # Redis stores data in memory, so this reflects memory usage.
+        # The on-disk size (from RDB/AOF) can be different.
+        return self.r.info('memory')['used_memory'] / (1024 * 1024)
 
 
 def run_performance_test(datastore_type, articles):
@@ -199,9 +201,13 @@ def run_performance_test(datastore_type, articles):
     if datastore_type == 'postgres':
         index = PostgresIndex(DB_PARAMS)
         index.build_and_save(articles)
-    else: # rocksdb
-        index = RocksDBIndex(ROCKSDB_PATH)
+    elif datastore_type == 'redis':
+        index = RedisIndex(REDIS_HOST, REDIS_PORT)
         index.build_and_save(articles)
+    else: # fallback or error
+        print(f"Unknown datastore type: {datastore_type}")
+        return {}
+        
     metrics['build_time_s'] = time.time() - start_build
     metrics['index_size_mb'] = index.get_disk_size()
 
@@ -297,12 +303,12 @@ def main():
         print("Please ensure PostgreSQL is running and the DB_PARAMS are correct.")
         print("---!!!---\n")
 
-    # Run tests for RocksDB
+    # Run tests for Redis
     try:
-        rocksdb_metrics = run_performance_test('rocksdb', articles)
-        all_metrics.append(rocksdb_metrics)
+        redis_metrics = run_performance_test('redis', articles)
+        all_metrics.append(redis_metrics)
     except Exception as e:
-        print(f"Could not run RocksDB test. Error: {e}")
+        print(f"Could not run Redis test. Error: {e}")
 
     if not all_metrics:
         print("No tests were successfully run. Exiting.")
