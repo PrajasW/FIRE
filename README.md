@@ -1,4 +1,4 @@
-# Information Retrieval and Inverted Indexing Engine
+# FIRE: Fast Information Retrieval Engine 
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Elasticsearch](https://img.shields.io/badge/Elasticsearch-Integration-005571?logo=elasticsearch)
@@ -6,7 +6,7 @@
 
 ## Overview
 
-We built this custom information retrieval (IR) engine to experiment with inverted index construction, storage backend trade-offs, and query processing optimization. The primary goal was to construct a full-text search index from scratch and benchmark its performance against production-ready systems like Elasticsearch. We use large-scale Wikipedia and news datasets to test latency, throughput, and memory constraints under realistic loads.
+I built this custom information retrieval (IR) engine to experiment with inverted index construction, storage backend trade-offs, and query processing optimization. The primary goal was to construct a full-text search index from scratch and benchmark its performance against production-ready systems like Elasticsearch. We use large-scale Wikipedia and news datasets to test latency, throughput, and memory constraints under realistic loads.
 
 ## Core Features
 
@@ -69,9 +69,3 @@ Execute a boolean search against the built index:
 ```bash
 python -m src.querying --query '("Apple" AND "Banana") OR ("Orange" AND NOT "Grape")'
 ```
-
-## Future Work
-
-- Implement vector search (dense retrieval) using embeddings.
-- Add support for fuzzy matching and typo-tolerance.
-- Introduce distributed index sharding to handle data sizes beyond single-node memory limits.
