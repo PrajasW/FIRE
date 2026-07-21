@@ -1,6 +1,6 @@
 from elasticsearch import Elasticsearch
 from elasticsearch.helpers import bulk
-from preprocess_data import get_preprocessed_data
+from src.preprocessing.preprocess_data import get_preprocessed_data
 
 def create_es_index(es_client, index_name):
     """

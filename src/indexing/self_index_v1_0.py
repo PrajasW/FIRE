@@ -7,7 +7,7 @@ import psutil
 import numpy as np
 import csv
 
-from preprocess_data import load_news_data, load_wikipedia_data, preprocess_text
+from src.preprocessing.preprocess_data import load_news_data, load_wikipedia_data, preprocess_text
 
 class SelfIndex_v1_0:
     """

@@ -10,7 +10,7 @@ import csv
 
 # We need a way to get the raw data, let's modify preprocess_data to expose that
 # For now, let's assume a function get_raw_data() exists that gives us title, text, published
-from preprocess_data import load_news_data, load_wikipedia_data
+from src.preprocessing.preprocess_data import load_news_data, load_wikipedia_data
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize

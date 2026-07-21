@@ -1,0 +1,9 @@
+elasticsearch>=8.0.0
+numpy
+matplotlib
+pandas
+nltk
+datasets
+wordcloud
+tqdm
+psutil

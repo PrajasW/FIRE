@@ -9,7 +9,7 @@ import csv
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from preprocess_data import load_news_data, load_wikipedia_data, preprocess_text
+from src.preprocessing.preprocess_data import load_news_data, load_wikipedia_data, preprocess_text
 
 class SelfIndex_v1_3:
     """

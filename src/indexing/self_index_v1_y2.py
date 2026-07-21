@@ -22,7 +22,7 @@ import psycopg2
 import redis
 import shutil
 
-from preprocess_data import load_news_data, load_wikipedia_data, preprocess_text
+from src.preprocessing.preprocess_data import load_news_data, load_wikipedia_data, preprocess_text
 
 # --- PostgreSQL Connection Parameters ---
 # !!! IMPORTANT: Adjust these to your local PostgreSQL setup !!!
