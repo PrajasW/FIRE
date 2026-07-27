@@ -30,11 +30,27 @@ src/
 
 ## Benchmarks and Evaluation
 
-*(Placeholder for latency, throughput, and memory plots)*
+We evaluated the performance of our indexing strategies across latency, throughput, memory footprint, and retrieval quality (F1-score).
 
-- **Latency:** Comparing $p_{95}$ and $p_{99}$ response times of our custom index versus Elasticsearch.
-- **Throughput:** Measuring read and write QPS under varying query complexity.
-- **Memory Footprint:** Tracking storage constraints across different datastores and compression algorithms.
+### 1. Skip Pointers Optimization Impact
+![Skip Pointers Optimization](assets/plot_a_skip_pointers.png)
+*Adding skip pointers significantly reduces $p_{95}$ and $p_{99}$ latency and boosts query throughput for Boolean retrieval.*
+
+### 2. Query Processing Engine (TAAT vs DAAT)
+![TAAT vs DAAT Engine](assets/plot_ac_query_processing.png)
+*Term-at-a-Time (TAAT) demonstrates lower latency compared to Document-at-a-Time (DAAT), with a similar memory footprint.*
+
+### 3. Compression Method Comparison
+![Compression Comparison](assets/plot_ab_compression_comparison.png)
+*Compression schemes drastically improve read throughput and reduce latency by keeping more of the postings list in memory/cache.*
+
+### 4. Memory Footprint by Index Type
+![Memory Footprint](assets/plot_c_memory_footprint.png)
+*Boolean indexes consume significantly more memory due to exact positional postings, whereas WordCount and TF-IDF require less overhead.*
+
+### 5. Retrieval Quality (F1-Score)
+![F1-Score Comparison](assets/plot_d_f1_score.png)
+*Comparison of F1-Scores across different ranking strategies and underlying datastores.*
 
 ## Getting Started
 
@@ -50,16 +66,52 @@ cd Custom-Search-Engine
 pip install -r requirements.txt
 ```
 
+### 🖥️ Running the Web UI Demo
+
+You can run a self-contained visual demo that builds the indexes and launches a Google-style search interface:
+
+```bash
+# 1. Build the sample indexes (streams 200 real Wikipedia articles)
+python build_demo_indexes.py
+
+# 2. Start a local web server
+python -m http.server 8080
+
+# 3. Open your browser and go to:
+# http://localhost:8080/index_viewer/index.html
+```
+
+#### FIRE Search Interface
+
+Our custom index is accompanied by a sleek, Google-inspired frontend designed with both dark and light modes. 
+
+**The Landing Page:**
+![FIRE Search Page](assets/fire_search.png)
+*A minimalist, centralized search portal that allows users to instantly query the locally built custom indexes. It features a dropdown to select between different ranking models (Boolean, TF, TF-IDF).*
+
+**The Results Page:**
+![FIRE Results Page](assets/fire_results.png)
+*The highly optimized results interface renders search results in sub-milliseconds. It features advanced drill-down capabilities with dedicated tabs for filtering by **Documents**, raw **Terms**, and viewing the internal **Index Info**. Each search result provides the document's URL (or ID), the parsed title, and a generated text snippet mimicking modern search engines.*
+
 ### Usage
 
 The following commands represent the standard workflow for ingesting data and running queries.
 
 **1. Indexing Data**
 
-To build a new index from a dataset, pass the file path to the indexing module:
+To build a new index and run evaluations, execute the desired indexing module directly. We use a specific naming convention `self_index_v1_xyziq.py` to define the index configuration:
+* **`x`**: Information Indexed (1=Boolean, 2=Word counts, 3=TF-IDF)
+* **`y`**: Datastore (1=Local custom, 2=Off-the-shelf DB)
+* **`z`**: Compression (1=Simple, 2=Off-the-shelf library)
+* **`i`**: Index Optimization (0/1 for skip pointers)
+* **`q`**: Query Engine (`T` for TAAT, `D` for DAAT)
+
+*Note on Data:* The scripts automatically load the Wikipedia dataset using the `datasets` library from HuggingFace (`20231101.en` split). The News dataset should be placed locally in `data/data/News_Datasets/` (downloaded from webz.io). You do not need to pass data paths as arguments.
+
+For example, to run a basic TAAT boolean index configuration (`1110T`):
 
 ```bash
-python -m src.indexing.self_index_v1_0 --data ./data/wiki.json
+python -m src.indexing.self_index_v1_1110T
 ```
 
 **2. Running Queries**

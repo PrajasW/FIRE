@@ -11,7 +11,14 @@ Make sure you add all your code as you work on it to a github repository. We sho
    1. News data at [webz.io](https://github.com/Webhose/free-news-datasets) available on github.
    2. Wiki data from [huggingface](https://huggingface.co/datasets/wikimedia/wikipedia) use the split `20231101.en`.
 1. Implement your own simple indexing (`SelfIndex-v1.0`) over the boilerplate code shared and index the above data into it.
-   1. Build `SelfIndex-v1.xyziq` identified by the versioning number as follows. Structure your code so that you can use this version number to have it build/make the index with right choices and run the query tests on it accordingly. Plot relevant metrics (marked below) for your indexing against that of ES for the corresponding test query set.
+   1. Build `SelfIndex-v1.xyziq` identified by the versioning number as follows. The string `xyziq` represents the specific configuration of the index:
+      * **`x`**: Information Indexed (e.g., 1 for Boolean, 2 for word counts, 3 for TF-IDF).
+      * **`y`**: Datastore choice (e.g., 1 for local custom, 2 for off-the-shelf DB).
+      * **`z`**: Compression method (e.g., 1 for simple code, 2 for a library).
+      * **`i`**: Index optimization (e.g., 0 or 1 for skip pointers).
+      * **`q`**: Query processing engine (e.g., Tn for Term-at-a-time, Dn for Document-at-a-time).
+
+      Structure your code so that you can use this version number to have it build/make the index with right choices and run the query tests on it accordingly. Plot relevant metrics (marked below) for your indexing against that of ES for the corresponding test query set.
       1. `Plot.C` for `x=n` Iterate over different kinds of information indexed.
          1. `x=1` Boolean index with document IDs and postition IDs.
          2. `x=2` Enable ranking with word counts.

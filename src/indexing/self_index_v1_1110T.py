@@ -8,8 +8,9 @@ import numpy as np
 import csv
 
 from src.preprocessing.preprocess_data import load_news_data, load_wikipedia_data, preprocess_text
+from src.querying.query_utils import load_queries
 
-class SelfIndex_v1_0:
+class SelfIndex_v1_1110T:
     """
     A simple inverted index with a boolean query model.
     Data structure: { "term": { "doc_id1": [pos1, pos2, ...], ... } }
@@ -35,18 +36,18 @@ class SelfIndex_v1_0:
             for term, positions in term_positions.items():
                 self.inverted_index[term][doc_id] = positions
 
-    def save_index(self, filepath="self_index_v1_0.pkl"):
+    def save_index(self, filepath="self_index_v1_1110T.pkl"):
         """Saves the index and documents to a file."""
         with open(filepath, 'wb') as f:
             pickle.dump((self.inverted_index, self.documents), f)
-        print(f"Index v1.0 saved to {filepath}")
+        print(f"Index v1.1110T saved to {filepath}")
 
-    def load_index(self, filepath="self_index_v1_0.pkl"):
+    def load_index(self, filepath="self_index_v1_1110T.pkl"):
         """Loads the index and documents from a file."""
         if os.path.exists(filepath):
             with open(filepath, 'rb') as f:
                 self.inverted_index, self.documents = pickle.load(f)
-            print(f"Index v1.0 loaded from {filepath}")
+            print(f"Index v1.1110T loaded from {filepath}")
             return True
         return False
 
@@ -125,11 +126,11 @@ class SelfIndex_v1_0:
 
 
 def main():
-    index = SelfIndex_v1_0()
+    index = SelfIndex_v1_1110T()
     
     start_build_time = time.time()
     if not index.load_index():
-        print("Building new index (v1.0)...")
+        print("Building new index (v1.1110T)...")
         news_articles = load_news_data('data/data/News_Datasets', num_samples=1000)
         wikipedia_articles = load_wikipedia_data()
         articles = news_articles + wikipedia_articles[:1000]
@@ -141,13 +142,7 @@ def main():
     process = psutil.Process(os.getpid())
     memory_mb = process.memory_info().rss / (1024 * 1024)
     
-    queries_to_run = {
-        "Simple Term": "news",
-        "AND Query": "war and peace",
-        "OR Query": "apple or google",
-        "NOT Query": "world not peace",
-        "Phrase Query": '"new york"'
-    }
+    queries_to_run = load_queries('boolean')
 
     all_latencies = []
     num_runs = 10
@@ -173,14 +168,14 @@ def main():
     total_queries = len(queries_to_run) * num_runs
     throughput = total_queries / total_query_time if total_query_time > 0 else 0
 
-    print("\n--- SelfIndex-v1.0 Performance Metrics ---")
+    print("\n--- SelfIndex-v1.1110T Performance Metrics ---")
     print(f"Index Build Time: {build_time:.2f} seconds")
     print(f"Memory Footprint: {memory_mb:.2f} MB")
     print(f"p95 Latency: {p95:.2f} ms")
     print(f"p99 Latency: {p99:.2f} ms")
     print(f"Throughput: {throughput:.2f} queries/sec")
 
-    metrics_file = 'self_index_v1_0_metrics.csv'
+    metrics_file = 'self_index_v1_1110T_metrics.csv'
     with open(metrics_file, 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['Metric', 'Value'])

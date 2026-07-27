@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIRE Search</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Landing page (Google-style centered search) -->
+  <div id="landingPage" class="landing">
+    <div class="landing-center">
+      <div class="landing-logo">
+        <span class="logo-f">F</span><span class="logo-i">I</span><span class="logo-r">R</span><span class="logo-e">E</span>
+      </div>
+      <div class="landing-sub">Fast Information Retrieval Engine</div>
+      <div class="search-bar-wrap landing-bar">
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="currentColor"/></svg>
+        <input type="text" id="landingSearch" placeholder="Search the index..." autocomplete="off">
+        <button class="clear-btn hidden" id="landingClear">&times;</button>
+      </div>
+      <div class="landing-actions">
+        <button class="landing-btn" id="btnSearchLanding">FIRE Search</button>
+        <button class="landing-btn" id="btnBrowse">Browse Index</button>
+      </div>
+      <div class="landing-index-select">
+        <span class="idx-label">Index:</span>
+        <select id="indexSelect"></select>
+      </div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">
+      <svg id="sunIcon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+      <svg id="moonIcon" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+    </button>
+  </div>
+
+  <!-- Results page (Google-style results) -->
+  <div id="resultsPage" class="results-page hidden">
+    <header class="results-header">
+      <div class="results-header-inner">
+        <a class="results-logo" id="backToLanding">
+          <span class="logo-f">F</span><span class="logo-i">I</span><span class="logo-r">R</span><span class="logo-e">E</span>
+        </a>
+        <div class="search-bar-wrap results-bar">
+          <input type="text" id="resultsSearch" autocomplete="off">
+          <button class="clear-btn hidden" id="resultsClear">&times;</button>
+          <button class="search-btn-sm" id="btnSearchResults">
+            <svg width="20" height="20" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="currentColor"/></svg>
+          </button>
+        </div>
+        <div class="header-right">
+          <select id="indexSelectResults" class="idx-select-sm"></select>
+          <button class="theme-toggle-sm" id="themeToggle2" title="Toggle dark mode">
+            <svg id="sunIcon2" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37a.996.996 0 0 0-1.41 0 .996.996 0 0 0 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0a.996.996 0 0 0 0-1.41l-1.06-1.06zm1.06-10.96a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36a.996.996 0 0 0 0-1.41.996.996 0 0 0-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/></svg>
+            <svg id="moonIcon2" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/></svg>
+          </button>
+        </div>
+      </div>
+      <nav class="results-tabs">
+        <button class="tab active" data-tab="all" id="tabAll">All</button>
+        <button class="tab" data-tab="docs" id="tabDocs">Documents</button>
+        <button class="tab" data-tab="terms" id="tabTerms">Terms</button>
+        <button class="tab" data-tab="config" id="tabConfig">Index Info</button>
+      </nav>
+    </header>
+
+    <main class="results-body">
+      <div id="resultStats" class="result-stats"></div>
+      <div id="resultsContainer" class="results-container"></div>
+    </main>
+  </div>
+
+<script src="index_data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

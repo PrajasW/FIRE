@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from src.preprocessing.preprocess_data import load_news_data, load_wikipedia_data, preprocess_text
+from src.querying.query_utils import load_queries
 
 class SelfIndex_v1_1:
     """
@@ -193,13 +194,7 @@ def main():
     process = psutil.Process(os.getpid())
     memory_mb = process.memory_info().rss / (1024 * 1024)
     
-    queries_to_run = {
-        "Simple Term": "news",
-        "AND Query": "war and peace",
-        "OR Query": "apple or google",
-        "NOT Query": "world not peace",
-        "Phrase Query": '"new york"'
-    }
+    queries_to_run = load_queries('boolean')
 
     all_latencies = []
     num_runs = 10

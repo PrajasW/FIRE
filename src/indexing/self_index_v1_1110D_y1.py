@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from src.preprocessing.preprocess_data import load_news_data, load_wikipedia_data, preprocess_text
+from src.querying.query_utils import load_queries
 
 class SelfIndex_v1_y1:
     """
@@ -118,13 +119,7 @@ def run_performance_test(index, format_type):
     process = psutil.Process(os.getpid())
     metrics['memory_mb'] = process.memory_info().rss / (1024 * 1024)
     
-    queries_to_run = {
-        "AND Query 1": "war and peace",
-        "AND Query 2": "apple and computer",
-        "AND Query 3": "global and warming",
-        "AND Query 4": "election and results",
-        "AND Query 5": "health and pandemic"
-    }
+    queries_to_run = load_queries('and_only')
 
     all_latencies = []
     num_runs = 20 # More runs for stable latency measurement

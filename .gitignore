@@ -164,3 +164,7 @@ models/
 *.npz
 *.npy
 *.h5
+
+# Auto-generated UI index data
+viewer/index_data.js
+index_viewer/index_data.js
