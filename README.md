@@ -28,30 +28,6 @@ src/
 └── querying/         # Query parsers, TAAT/DAAT execution engines, Boolean logic evaluators
 ```
 
-## Benchmarks and Evaluation
-
-We evaluated the performance of our indexing strategies across latency, throughput, memory footprint, and retrieval quality (F1-score).
-
-### 1. Skip Pointers Optimization Impact
-![Skip Pointers Optimization](assets/plot_a_skip_pointers.png)
-*Adding skip pointers significantly reduces $p_{95}$ and $p_{99}$ latency and boosts query throughput for Boolean retrieval.*
-
-### 2. Query Processing Engine (TAAT vs DAAT)
-![TAAT vs DAAT Engine](assets/plot_ac_query_processing.png)
-*Term-at-a-Time (TAAT) demonstrates lower latency compared to Document-at-a-Time (DAAT), with a similar memory footprint.*
-
-### 3. Compression Method Comparison
-![Compression Comparison](assets/plot_ab_compression_comparison.png)
-*Compression schemes drastically improve read throughput and reduce latency by keeping more of the postings list in memory/cache.*
-
-### 4. Memory Footprint by Index Type
-![Memory Footprint](assets/plot_c_memory_footprint.png)
-*Boolean indexes consume significantly more memory due to exact positional postings, whereas WordCount and TF-IDF require less overhead.*
-
-### 5. Retrieval Quality (F1-Score)
-![F1-Score Comparison](assets/plot_d_f1_score.png)
-*Comparison of F1-Scores across different ranking strategies and underlying datastores.*
-
 ## Getting Started
 
 You will need Python 3.8+ and a running Elasticsearch instance (local or via Docker) to execute the benchmarking suite.
@@ -66,7 +42,7 @@ cd Custom-Search-Engine
 pip install -r requirements.txt
 ```
 
-### 🖥️ Running the Web UI Demo
+### Running the Web UI Demo
 
 You can run a self-contained visual demo that builds the indexes and launches a Google-style search interface:
 
@@ -92,6 +68,30 @@ Our custom index is accompanied by a sleek, Google-inspired frontend designed wi
 **The Results Page:**
 ![FIRE Results Page](assets/fire_results.png)
 *The highly optimized results interface renders search results in sub-milliseconds. It features advanced drill-down capabilities with dedicated tabs for filtering by **Documents**, raw **Terms**, and viewing the internal **Index Info**. Each search result provides the document's URL (or ID), the parsed title, and a generated text snippet mimicking modern search engines.*
+
+## Benchmarks and Evaluation
+
+We evaluated the performance of our indexing strategies across latency, throughput, memory footprint, and retrieval quality (F1-score).
+
+### 1. Skip Pointers Optimization Impact
+![Skip Pointers Optimization](assets/plot_a_skip_pointers.png)
+*Adding skip pointers significantly reduces $p_{95}$ and $p_{99}$ latency and boosts query throughput for Boolean retrieval.*
+
+### 2. Query Processing Engine (TAAT vs DAAT)
+![TAAT vs DAAT Engine](assets/plot_ac_query_processing.png)
+*Term-at-a-Time (TAAT) demonstrates lower latency compared to Document-at-a-Time (DAAT), with a similar memory footprint.*
+
+### 3. Compression Method Comparison
+![Compression Comparison](assets/plot_ab_compression_comparison.png)
+*Compression schemes drastically improve read throughput and reduce latency by keeping more of the postings list in memory/cache.*
+
+### 4. Memory Footprint by Index Type
+![Memory Footprint](assets/plot_c_memory_footprint.png)
+*Boolean indexes consume significantly more memory due to exact positional postings, whereas WordCount and TF-IDF require less overhead.*
+
+### 5. Retrieval Quality (F1-Score)
+![F1-Score Comparison](assets/plot_d_f1_score.png)
+*Comparison of F1-Scores across different ranking strategies and underlying datastores.*
 
 ### Usage
 
